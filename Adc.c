@@ -1,5 +1,5 @@
 #include "adc_libs.h"
- 
+
  // =============================================================================
  // VARIÁVEIS GLOBAIS (algumas são voláteis pois são alteradas em ISR)
  // =============================================================================
@@ -164,9 +164,18 @@
          uint16_t diff_x = (adc_x > ADC_CENTER) ? (adc_x - ADC_CENTER) : (ADC_CENTER - adc_x);
          uint16_t diff_y = (adc_y > ADC_CENTER) ? (adc_y - ADC_CENTER) : (ADC_CENTER - adc_y);
          
-         // Mapeia a diferença para o intervalo de PWM (0 a 4095)
-         uint32_t duty_red  = ((uint32_t) diff_x * 4095) / ADC_CENTER;
-         uint32_t duty_blue = ((uint32_t) diff_y * 4095) / ADC_CENTER;
+        //  // Mapeia a diferença para o intervalo de PWM (0 a 4095)
+        //  uint32_t duty_red  = ((uint32_t) diff_x * 4095) / ADC_CENTER;
+        //  uint32_t duty_blue = ((uint32_t) diff_y * 4095) / ADC_CENTER;
+
+        // Aplica dead zone e calcula duty cycle
+        uint32_t duty_red = 0, duty_blue = 0;
+        if (diff_x > ADC_DEADZONE) {
+            duty_red = ((diff_x - ADC_DEADZONE) * 4095) / (ADC_CENTER - ADC_DEADZONE);
+        }
+        if (diff_y > ADC_DEADZONE) {
+            duty_blue = ((diff_y - ADC_DEADZONE) * 4095) / (ADC_CENTER - ADC_DEADZONE);
+        }
  
          if (pwm_enabled) {
              pwm_set_gpio_level(PIN_LED_RED, duty_red);
@@ -193,15 +202,19 @@
         ssd1306_rect(&ssd, 0, 0, SSD1306_WIDTH, SSD1306_HEIGHT, 1, 0);
     }
     else if (border_style == 1) {
-        // Estilo 1: borda pontilhada (desenha pixels alternados)
-        for (int x = 0; x < SSD1306_WIDTH; x += 2) {
-            ssd1306_pixel(&ssd, x, 0, 1);
-            ssd1306_pixel(&ssd, x, SSD1306_HEIGHT - 1, 1);
-        }
-        for (int y = 0; y < SSD1306_HEIGHT; y += 2) {
-            ssd1306_pixel(&ssd, 0, y, 1);
-            ssd1306_pixel(&ssd, SSD1306_WIDTH - 1, y, 1);
-        }
+        // // Estilo 1: borda pontilhada (desenha pixels alternados)
+        // for (int x = 0; x < SSD1306_WIDTH; x += 2) {
+        //     ssd1306_pixel(&ssd, x, 0, 1);
+        //     ssd1306_pixel(&ssd, x, SSD1306_HEIGHT - 1, 1);
+        // }
+        // for (int y = 0; y < SSD1306_HEIGHT; y += 2) {
+        //     ssd1306_pixel(&ssd, 0, y, 1);
+        //     ssd1306_pixel(&ssd, SSD1306_WIDTH - 1, y, 1);
+        // }
+
+        ssd1306_rect(&ssd, 0, 0, SSD1306_WIDTH, SSD1306_HEIGHT, 1, 0);
+        ssd1306_rect(&ssd, 1, 1, SSD1306_WIDTH-2, SSD1306_HEIGHT-2, 1, 0);
+        ssd1306_rect(&ssd, 2, 2, SSD1306_WIDTH-4, SSD1306_HEIGHT-4, 1, 0);
 }
 
 // Desenha o quadrado móvel representando a posição do joystick

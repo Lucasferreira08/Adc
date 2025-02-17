@@ -40,4 +40,6 @@
 #define I2C_PORT i2c1       // Controlador I²C0 do RP2040
 #define SSD1306_ADDR 0x3C   // Endereço I²C do display (alternativo: 0x3C)
 
+#define ADC_DEADZONE 200           // Dead zone around joystick center (adjust as needed)
+
 #endif
