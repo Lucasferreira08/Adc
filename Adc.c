@@ -60,13 +60,22 @@
      gpio_set_dir(PIN_LED_GREEN, GPIO_OUT);
      gpio_put(PIN_LED_GREEN, led_green_on);   // estado inicial desligado
 
+     // init button joystick
+     gpio_init(PIN_JOYSTICK_BTN);
+     gpio_set_dir(PIN_JOYSTICK_BTN, GPIO_IN);
+     gpio_pull_up(PIN_JOYSTICK_BTN);
+
+     // init button joystick
+     gpio_init(PIN_BTN_A);
+     gpio_set_dir(PIN_BTN_A, GPIO_IN);
+     gpio_pull_up(PIN_BTN_A);
+
      // ---------------------------
      // Configuração dos botões com interrupção (IRQ)
      // ---------------------------
-     gpio_set_irq_enabled(PIN_JOYSTICK_BTN, GPIO_IRQ_EDGE_FALL, true);
-     gpio_set_irq_enabled(PIN_BTN_A, GPIO_IRQ_EDGE_FALL, true);
      // Registra a callback para todos os GPIOs
-     gpio_set_irq_callback(gpio_callback);
+     gpio_set_irq_enabled_with_callback(PIN_JOYSTICK_BTN, GPIO_IRQ_EDGE_FALL, true, &gpio_callback);
+     gpio_set_irq_enabled_with_callback(PIN_BTN_A, GPIO_IRQ_EDGE_FALL, true, &gpio_callback);
 
      // ---------------------------
      // Configuração do ADC para o joystick

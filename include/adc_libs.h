@@ -16,9 +16,9 @@
 #define DEBOUNCE_DELAY_MS    200   // atraso para debouncing (ms)
 
 // Mapeamento dos pinos
-#define PIN_LED_BLUE         11    // LED Azul (PWM) – controlado pelo eixo Y do joystick
-#define PIN_LED_RED          12    // LED Vermelho (PWM) – controlado pelo eixo X do joystick
-#define PIN_LED_GREEN        13    // LED Verde (digital) – acionado pelo botão do joystick
+#define PIN_LED_BLUE         12    // LED Azul (PWM) – controlado pelo eixo Y do joystick
+#define PIN_LED_RED          13    // LED Vermelho (PWM) – controlado pelo eixo X do joystick
+#define PIN_LED_GREEN        11    // LED Verde (digital) – acionado pelo botão do joystick
 #define PIN_JOYSTICK_BTN     22    // Botão do joystick
 #define PIN_BTN_A            5     // Botão A
 #define PIN_JOYSTICK_X       26    // Joystick eixo X (ADC0)
