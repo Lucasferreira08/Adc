@@ -142,31 +142,18 @@
      // =============================================================================
      // LOOP PRINCIPAL
      // =============================================================================
-     while (1) {
-         // --- Leitura dos valores do joystick (ADC) ---
-         // Leitura do eixo X (botão controla o LED Vermelho)
-        //  adc_select_input(0);
-        //  uint16_t adc_x = adc_read();
- 
-        //  // Leitura do eixo Y (botão controla o LED Azul)
-        //  adc_select_input(1);
-        //  uint16_t adc_y = adc_read();
-
+    while (1) {
         adc_select_input(0);
-         uint16_t adc_y = adc_read();
+        uint16_t adc_y = adc_read();
  
-         adc_select_input(1);
-         uint16_t adc_x = adc_read();
+        adc_select_input(1);
+        uint16_t adc_x = adc_read();
  
-         // --- Cálculo dos níveis PWM para os LEDs ---
-         // A ideia é que, quando o joystick estiver no centro (2048), o LED fique apagado.
-         // Quanto maior o desvio (seja para mais ou para menos), maior a intensidade.
-         uint16_t diff_x = (adc_x > ADC_CENTER) ? (adc_x - ADC_CENTER) : (ADC_CENTER - adc_x);
-         uint16_t diff_y = (adc_y > ADC_CENTER) ? (adc_y - ADC_CENTER) : (ADC_CENTER - adc_y);
-         
-        //  // Mapeia a diferença para o intervalo de PWM (0 a 4095)
-        //  uint32_t duty_red  = ((uint32_t) diff_x * 4095) / ADC_CENTER;
-        //  uint32_t duty_blue = ((uint32_t) diff_y * 4095) / ADC_CENTER;
+        // --- Cálculo dos níveis PWM para os LEDs ---
+        // A ideia é que, quando o joystick estiver no centro (2048), o LED fique apagado.
+        // Quanto maior o desvio (seja para mais ou para menos), maior a intensidade.
+        uint16_t diff_x = (adc_x > ADC_CENTER) ? (adc_x - ADC_CENTER) : (ADC_CENTER - adc_x);
+        uint16_t diff_y = (adc_y > ADC_CENTER) ? (adc_y - ADC_CENTER) : (ADC_CENTER - adc_y);
 
         // Aplica dead zone e calcula duty cycle
         uint32_t duty_red = 0, duty_blue = 0;
@@ -177,58 +164,47 @@
             duty_blue = ((diff_y - ADC_DEADZONE) * 4095) / (ADC_CENTER - ADC_DEADZONE);
         }
  
-         if (pwm_enabled) {
-             pwm_set_gpio_level(PIN_LED_RED, duty_red);
-             pwm_set_gpio_level(PIN_LED_BLUE, duty_blue);
-         }
-         else {
-             // Se os PWM estiverem desativados, força o valor 0
-             pwm_set_gpio_level(PIN_LED_RED, 0);
-             pwm_set_gpio_level(PIN_LED_BLUE, 0);
-         }
- 
-         // --- Cálculo da posição do quadrado no display ---
-    // Mapeia os valores ADC para a posição dentro da área útil do display
-    uint8_t square_x = (adc_x * (SSD1306_WIDTH - SQUARE_SIZE)) / ADC_MAX;
-    uint8_t square_y = ((ADC_MAX - adc_y) * (SSD1306_HEIGHT - SQUARE_SIZE)) / ADC_MAX;
-
-    // --- Atualização do display SSD1306 ---
-    // Limpa o buffer do display
-    ssd1306_fill(&ssd, false);
-
-    // Desenha a borda de acordo com o estilo atual (alternado pelo botão do joystick)
-    if (border_style == 0) {
-    // Estilo 0: borda completa (retângulo vazio)
-        ssd1306_rect(&ssd, 0, 0, SSD1306_WIDTH, SSD1306_HEIGHT, 1, 0);
-    }
-    else if (border_style == 1) {
-        // // Estilo 1: borda pontilhada (desenha pixels alternados)
-        // for (int x = 0; x < SSD1306_WIDTH; x += 2) {
-        //     ssd1306_pixel(&ssd, x, 0, 1);
-        //     ssd1306_pixel(&ssd, x, SSD1306_HEIGHT - 1, 1);
-        // }
-        // for (int y = 0; y < SSD1306_HEIGHT; y += 2) {
-        //     ssd1306_pixel(&ssd, 0, y, 1);
-        //     ssd1306_pixel(&ssd, SSD1306_WIDTH - 1, y, 1);
-        // }
-
-        ssd1306_rect(&ssd, 0, 0, SSD1306_WIDTH, SSD1306_HEIGHT, 1, 0);
-        ssd1306_rect(&ssd, 1, 1, SSD1306_WIDTH-2, SSD1306_HEIGHT-2, 1, 0);
-        ssd1306_rect(&ssd, 2, 2, SSD1306_WIDTH-4, SSD1306_HEIGHT-4, 1, 0);
-}
-
-// Desenha o quadrado móvel representando a posição do joystick
-// Nota: A função ssd1306_rect espera (top, left, width, height),
-// portanto, square_y é o 'top' e square_x é o 'left'
-    ssd1306_rect(&ssd, square_y, square_x, SQUARE_SIZE, SQUARE_SIZE, 1, 1);
-
-// Atualiza o display (envia o buffer via I2C)
-    ssd1306_send_data(&ssd);
-
-    // Pequeno atraso para não sobrecarregar a CPU (e ajustar taxa de atualização)
-    sleep_ms(50);
-
+        if (pwm_enabled) {
+            pwm_set_gpio_level(PIN_LED_RED, duty_red);
+            pwm_set_gpio_level(PIN_LED_BLUE, duty_blue);
+        }
+        else {
+            // Se os PWM estiverem desativados, força o valor 0
+            pwm_set_gpio_level(PIN_LED_RED, 0);
+            pwm_set_gpio_level(PIN_LED_BLUE, 0);
         }
  
-     return 0;
+         // --- Cálculo da posição do quadrado no display ---
+        // Mapeia os valores ADC para a posição dentro da área útil do display
+        uint8_t square_x = (adc_x * (SSD1306_WIDTH - SQUARE_SIZE)) / ADC_MAX;
+        uint8_t square_y = ((ADC_MAX - adc_y) * (SSD1306_HEIGHT - SQUARE_SIZE)) / ADC_MAX;
+
+        // --- Atualização do display SSD1306 ---
+        // Limpa o buffer do display
+        ssd1306_fill(&ssd, false);
+
+        // Desenha a borda de acordo com o estilo atual (alternado pelo botão do joystick)
+        if (border_style == 0) {
+        // Estilo 0: borda completa (retângulo vazio)
+            ssd1306_rect(&ssd, 0, 0, SSD1306_WIDTH, SSD1306_HEIGHT, 1, 0);
+        }
+        else if (border_style == 1) {
+            ssd1306_rect(&ssd, 0, 0, SSD1306_WIDTH, SSD1306_HEIGHT, 1, 0);
+            ssd1306_rect(&ssd, 1, 1, SSD1306_WIDTH-2, SSD1306_HEIGHT-2, 1, 0);
+            ssd1306_rect(&ssd, 2, 2, SSD1306_WIDTH-4, SSD1306_HEIGHT-4, 1, 0);
+        }
+
+        // Desenha o quadrado móvel representando a posição do joystick
+        // Nota: A função ssd1306_rect espera (top, left, width, height),
+        // portanto, square_y é o 'top' e square_x é o 'left'
+        ssd1306_rect(&ssd, square_y, square_x, SQUARE_SIZE, SQUARE_SIZE, 1, 1);
+
+        // Atualiza o display (envia o buffer via I2C)
+        ssd1306_send_data(&ssd);
+
+        // Pequeno atraso para não sobrecarregar a CPU (e ajustar taxa de atualização)
+        sleep_ms(50);
+    }
+ 
+    return 0;
  }

@@ -13,7 +13,7 @@
 // =============================================================================
 // DEFINIÇÕES DE CONSTANTES
 // =============================================================================
-#define DEBOUNCE_DELAY_MS    200   // atraso para debouncing (ms)
+#define DEBOUNCE_DELAY_MS    150   // atraso para debouncing (ms)
 
 // Mapeamento dos pinos
 #define PIN_LED_BLUE         12    // LED Azul (PWM) – controlado pelo eixo Y do joystick
